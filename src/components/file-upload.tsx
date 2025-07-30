@@ -1,13 +1,13 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { useDropzone } from "react-dropzone";
+import { FileRejection, useDropzone } from "react-dropzone";
 import { Button } from "@/components/ui/button";
 import { File, Upload, X, CheckCircle, Loader2 } from "lucide-react";
 import { uploadFile } from "@/app/actions";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-
+import Image from "next/image";
 interface FileWithPreview extends File {
   preview: string;
 }
@@ -46,11 +46,11 @@ export default function FileUpload({
   const [results, setResults] = useState<UploadResult[]>([]);
 
   const onDrop = useCallback(
-    (acceptedFiles: File[], rejectedFiles: any[]) => {
+    (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
       // Check for rejected files (size too large, wrong type, etc.)
       if (rejectedFiles.length > 0) {
         rejectedFiles.forEach(({ file, errors }) => {
-          errors.forEach((error: any) => {
+          errors.forEach((error) => {
             if (error.code === "file-too-large") {
               toast.error(`File "${file.name}" is too large`, {
                 description: `Maximum file size is ${formatBytes(
@@ -250,7 +250,7 @@ export default function FileUpload({
                 {/* Preview/Ícone */}
                 <div className="flex-shrink-0">
                   {file.type.startsWith("image/") ? (
-                    <img
+                    <Image
                       src={file.preview}
                       alt={file.name}
                       className="w-12 h-12 object-cover rounded"
