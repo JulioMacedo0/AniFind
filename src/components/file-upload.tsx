@@ -1,15 +1,35 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { FileRejection, useDropzone } from "react-dropzone";
+import { ErrorCode, FileRejection, useDropzone } from "react-dropzone";
 import { Button } from "@/components/ui/button";
-import { File, Upload, X, CheckCircle, Loader2 } from "lucide-react";
+import { File, Upload, X, Loader2 } from "lucide-react";
 import { uploadFile } from "@/app/actions";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import Image from "next/image";
 interface FileWithPreview extends File {
   preview: string;
+}
+
+interface SearchResult {
+  rank: number;
+  anime: string;
+  season: number;
+  episode: number;
+  timecode: string;
+  second: number;
+  similarity: number;
+  anime_id: number;
+  source_file: string;
+  preview_source_path: string;
+  preview_video?: string | null;
+}
+
+interface SearchResponse {
+  top_result?: SearchResult | null;
+  all_results: SearchResult[];
+  preview_url?: string | null;
 }
 
 interface UploadResult {
@@ -21,10 +41,14 @@ interface UploadResult {
     size: number;
     lastModified: number;
   };
+  searchResults?: SearchResponse;
+  error?: {
+    error: string;
+    detail?: string | null;
+  };
 }
 
 interface FileUploadProps {
-  maxFiles?: number;
   maxFileSize?: number; // in bytes
 }
 
@@ -38,12 +62,11 @@ const formatBytes = (bytes: number, decimals = 2) => {
 };
 
 export default function FileUpload({
-  maxFiles = 5,
-  maxFileSize = 10 * 1024 * 1024, // 10MB default
+  maxFileSize = 5 * 1024 * 1024, // 5MB default
 }: FileUploadProps = {}) {
-  const [files, setFiles] = useState<FileWithPreview[]>([]);
+  const [file, setFile] = useState<FileWithPreview | null>(null);
   const [loading, setLoading] = useState(false);
-  const [results, setResults] = useState<UploadResult[]>([]);
+  const [result, setResult] = useState<UploadResult | null>(null);
 
   const onDrop = useCallback(
     (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
@@ -51,158 +74,259 @@ export default function FileUpload({
       if (rejectedFiles.length > 0) {
         rejectedFiles.forEach(({ file, errors }) => {
           errors.forEach((error) => {
-            if (error.code === "file-too-large") {
+            if (error.code === ErrorCode.FileTooLarge) {
               toast.error(`File "${file.name}" is too large`, {
                 description: `Maximum file size is ${formatBytes(
                   maxFileSize
                 )}. Your file is ${formatBytes(file.size)}.`,
               });
-            } else if (error.code === "file-invalid-type") {
+            } else if (error.code === ErrorCode.FileInvalidType) {
               toast.error(`File "${file.name}" has invalid type`, {
                 description:
                   "Only PNG, JPG, JPEG, GIF, and WebP images are supported.",
               });
-            } else if (error.code === "too-many-files") {
-              toast.error("Too many files selected", {
-                description: `You can only upload ${maxFiles} file${
-                  maxFiles > 1 ? "s" : ""
-                } at a time.`,
-              });
             }
           });
         });
+        return;
       }
 
-      // Check if adding new files would exceed maxFiles limit
-      const totalFilesAfterAdd = files.length + acceptedFiles.length;
-      if (totalFilesAfterAdd > maxFiles) {
-        const allowedCount = maxFiles - files.length;
-        if (allowedCount <= 0) {
-          toast.error("Maximum files reached", {
-            description: `You can only upload ${maxFiles} file${
-              maxFiles > 1 ? "s" : ""
-            } at a time. Please remove some files first.`,
-          });
-          return;
-        } else {
-          toast.warning("Some files were not added", {
-            description: `Only ${allowedCount} file${
-              allowedCount > 1 ? "s" : ""
-            } can be added. You've reached the ${maxFiles} file limit.`,
-          });
+      // Take only the first file
+      const selectedFile = acceptedFiles[0];
+      if (selectedFile) {
+        // Clear previous file if exists
+        if (file) {
+          URL.revokeObjectURL(file.preview);
         }
-      }
 
-      // Limit files based on maxFiles prop
-      const limitedFiles = acceptedFiles.slice(0, maxFiles - files.length);
+        const fileWithPreview = Object.assign(selectedFile, {
+          preview: URL.createObjectURL(selectedFile),
+        }) as FileWithPreview;
 
-      const filesWithPreview = limitedFiles.map(
-        (file) =>
-          Object.assign(file, {
-            preview: URL.createObjectURL(file),
-          }) as FileWithPreview
-      );
+        setFile(fileWithPreview);
+        setResult(null);
 
-      if (filesWithPreview.length > 0) {
-        setFiles((prev) => [...prev, ...filesWithPreview]);
-        setResults([]); // Clear previous results
-        toast.success(
-          `${filesWithPreview.length} file${
-            filesWithPreview.length > 1 ? "s" : ""
-          } added successfully`
-        );
+        // Auto upload the file
+        handleFileUpload(fileWithPreview);
       }
     },
-    [maxFiles, maxFileSize, files.length]
+    [maxFileSize, file]
   );
 
-  const removeFile = (fileToRemove: FileWithPreview) => {
-    setFiles((files) => files.filter((file) => file !== fileToRemove));
-    URL.revokeObjectURL(fileToRemove.preview);
-  };
-
-  const handleUpload = async () => {
-    if (files.length === 0) return;
-
+  const handleFileUpload = async (fileToUpload: FileWithPreview) => {
     setLoading(true);
-    const uploadResults: UploadResult[] = [];
 
-    for (const file of files) {
-      try {
-        const formData = new FormData();
-        formData.append("file", file);
+    try {
+      const formData = new FormData();
+      formData.append("file", fileToUpload);
 
-        const result = await uploadFile(formData);
-        uploadResults.push(result);
+      const uploadResult = await uploadFile(formData);
 
-        // Show success/error toast for each file
-        if (result.success) {
-          toast.success(`File "${file.name}" uploaded successfully!`);
-        } else {
-          toast.error(`Failed to upload "${file.name}"`, {
-            description: result.message,
-          });
-        }
-      } catch (error) {
-        const errorResult = {
-          success: false,
-          message: `Error uploading ${file.name}: ${error}`,
-        };
-        uploadResults.push(errorResult);
+      setResult(uploadResult);
 
-        toast.error(`Upload failed for "${file.name}"`, {
-          description: `Unexpected error occurred: ${error}`,
+      // Print results to console as requested
+      console.log("=== UPLOAD COMPLETED ===");
+      console.log("Result:", uploadResult);
+      if (uploadResult.success && uploadResult.fileInfo) {
+        console.log("File Info:", uploadResult.fileInfo);
+      }
+
+      if (uploadResult.success) {
+        toast.success(`File "${fileToUpload.name}" uploaded successfully!`);
+      } else {
+        toast.error(`Failed to upload "${fileToUpload.name}"`, {
+          description: uploadResult.message,
         });
       }
-    }
-
-    setResults(uploadResults);
-    setLoading(false);
-
-    // Show summary toast
-    const successCount = uploadResults.filter((r) => r.success).length;
-    const failureCount = uploadResults.length - successCount;
-
-    if (failureCount === 0) {
-      toast.success("All files uploaded successfully!", {
-        description: `${successCount} file${
-          successCount > 1 ? "s" : ""
-        } processed.`,
+    } catch (error) {
+      const errorMessage = `Error uploading ${fileToUpload.name}: ${error}`;
+      setResult({
+        success: false,
+        message: errorMessage,
       });
-    } else if (successCount === 0) {
-      toast.error("All uploads failed", {
-        description: `${failureCount} file${
-          failureCount > 1 ? "s" : ""
-        } could not be uploaded.`,
+
+      console.error("=== UPLOAD ERROR ===");
+      console.error("Error:", errorMessage);
+
+      toast.error(`Upload failed for "${fileToUpload.name}"`, {
+        description: `Unexpected error occurred: ${error}`,
       });
-    } else {
-      toast.warning("Upload completed with some errors", {
-        description: `${successCount} succeeded, ${failureCount} failed.`,
-      });
+    } finally {
+      setLoading(false);
     }
   };
 
-  const clearAll = () => {
-    files.forEach((file) => URL.revokeObjectURL(file.preview));
-    setFiles([]);
-    setResults([]);
+  const clearFile = () => {
+    if (file) {
+      URL.revokeObjectURL(file.preview);
+      setFile(null);
+      setResult(null);
+    }
   };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    multiple: true,
+    multiple: false,
     maxSize: maxFileSize,
-    maxFiles: maxFiles,
     accept: {
       "image/*": [".png", ".jpg", ".jpeg", ".gif", ".webp"],
     },
   });
 
-  const hasSuccessfulUploads = results.some((r) => r.success);
-
   return (
     <div className="w-full max-w-2xl mx-auto p-6">
       <h2 className="text-2xl font-bold mb-6">Image Upload</h2>
+
+      {/* Preview da Imagem com Loading */}
+      {file && (
+        <div className="relative mb-6">
+          <div className="relative">
+            <Image
+              width={400}
+              height={300}
+              src={file.preview}
+              alt={file.name}
+              className={cn(
+                "w-full h-64 object-cover rounded-lg border-2",
+                loading ? "animate-pulse opacity-60" : "opacity-100"
+              )}
+            />
+
+            {/* Overlay de Loading */}
+            {loading && (
+              <div className="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center">
+                <div className="text-center text-white">
+                  <Loader2 className="w-8 h-8 animate-spin mx-auto mb-2" />
+                  <p className="text-sm font-medium">Uploading...</p>
+                  <p className="text-xs mt-1">Processing your image</p>
+                </div>
+              </div>
+            )}
+
+            {/* Botão para remover arquivo */}
+            {!loading && (
+              <Button
+                variant="destructive"
+                size="sm"
+                className="absolute top-2 right-2 cursor-pointer"
+                onClick={clearFile}
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            )}
+          </div>
+
+          {/* Informações do arquivo */}
+          <div className="mt-2 text-sm text-gray-600">
+            <p className="font-medium truncate">{file.name}</p>
+            <p className="text-xs">
+              {formatBytes(file.size)} • {file.type}
+            </p>
+          </div>
+
+          {/* Status do Upload e Resultados da Busca */}
+          {result && (
+            <div className="mt-3 space-y-3">
+              {/* Resultados da Busca de Anime */}
+              {result.success && result.searchResults?.top_result && (
+                <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <h3 className="text-lg font-semibold text-blue-900 mb-3 flex items-center gap-2">
+                    🎌 Anime Found!
+                  </h3>
+
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <p className="font-medium text-blue-800">
+                          {result.searchResults.top_result.anime.replace(
+                            /-/g,
+                            ""
+                          )}
+                        </p>
+                        <p className="text-sm text-blue-600">
+                          Season {result.searchResults.top_result.season} •
+                          Episode {result.searchResults.top_result.episode}
+                        </p>
+                        <p className="text-xs text-blue-500">
+                          Timecode: {result.searchResults.top_result.timecode}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <div className="bg-blue-100 px-2 py-1 rounded-full">
+                          <span className="text-sm font-medium text-blue-800">
+                            {result.searchResults.top_result.similarity.toFixed(
+                              1
+                            )}
+                            % match
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Preview Video */}
+                    {result.searchResults.top_result.preview_video && (
+                      <div className="mt-3">
+                        <p className="text-xs text-blue-600 mb-2">Preview:</p>
+                        <video
+                          controls
+                          className="w-full max-w-md rounded-lg"
+                          src={result.searchResults.top_result.preview_video}
+                        >
+                          Your browser does not support the video tag.
+                        </video>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Outros Resultados */}
+              {result.success &&
+                result.searchResults?.all_results &&
+                result.searchResults.all_results.length > 1 && (
+                  <div className="p-3 bg-gray-50 border border-gray-200 rounded-lg">
+                    <h4 className="text-sm font-semibold text-gray-700 mb-2">
+                      Other matches (
+                      {result.searchResults.all_results.length - 1} more):
+                    </h4>
+                    <div className="space-y-1 max-h-32 overflow-y-auto">
+                      {result.searchResults.all_results
+                        .slice(1, 4)
+                        .map((searchResult, index) => (
+                          <div
+                            key={index}
+                            className="flex justify-between items-center text-xs"
+                          >
+                            <span className="text-gray-600">
+                              {searchResult.anime} S{searchResult.season}E
+                              {searchResult.episode}
+                            </span>
+                            <span className="text-gray-500">
+                              {searchResult.similarity.toFixed(1)}%
+                            </span>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                )}
+
+              {/* Error Details */}
+              {!result.success && result.error && (
+                <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                  <p className="text-sm text-red-700">
+                    <strong>Error:</strong> {result.error.error}
+                  </p>
+                  {result.error.detail && (
+                    <p className="text-xs text-red-600 mt-1">
+                      {result.error.detail}
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Zona de Drop */}
       <div
@@ -212,147 +336,29 @@ export default function FileUpload({
           isDragActive
             ? "border-blue-500 bg-blue-50"
             : "border-gray-300 hover:border-gray-400",
-          files.length > 0 && "mb-6"
+          file && "border-gray-200 bg-gray-50"
         )}
       >
         <input {...getInputProps()} />
         <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
         {isDragActive ? (
-          <p className="text-blue-600">Drop the files here...</p>
+          <p className="text-blue-600">Drop the image here...</p>
         ) : (
           <div>
-            <p className="text-lg mb-2">Drag images here or click to select</p>
+            <p className="text-lg mb-2">
+              {file
+                ? "Drop a new image to replace"
+                : "Drag an image here or click to select"}
+            </p>
             <p className="text-sm text-gray-500">
               Support for PNG, JPG, JPEG, GIF, and WebP images
+            </p>
+            <p className="text-xs text-gray-400 mt-1">
+              Max size: {formatBytes(maxFileSize)}
             </p>
           </div>
         )}
       </div>
-
-      {/* Lista de Arquivos */}
-      {files.length > 0 && (
-        <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h3 className="text-lg font-semibold">
-              Selected Files ({files.length})
-            </h3>
-            <Button variant="outline" size="sm" onClick={clearAll}>
-              Clear All
-            </Button>
-          </div>
-
-          <div className="space-y-2">
-            {files.map((file, index) => (
-              <div
-                key={`${file.name}-${index}`}
-                className="flex items-center gap-4 p-3 border rounded-lg"
-              >
-                {/* Preview/Ícone */}
-                <div className="flex-shrink-0">
-                  {file.type.startsWith("image/") ? (
-                    <Image
-                      src={file.preview}
-                      alt={file.name}
-                      className="w-12 h-12 object-cover rounded"
-                    />
-                  ) : (
-                    <div className="w-12 h-12 bg-gray-100 rounded flex items-center justify-center">
-                      <File className="w-6 h-6 text-gray-400" />
-                    </div>
-                  )}
-                </div>
-
-                {/* Informações do Arquivo */}
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-medium truncate">{file.name}</p>
-                  <p className="text-xs text-gray-500">
-                    {formatBytes(file.size)} • {file.type}
-                  </p>
-                </div>
-
-                {/* Status do Upload */}
-                <div className="flex-shrink-0">
-                  {results.length > 0 && results[index] ? (
-                    results[index].success ? (
-                      <CheckCircle className="w-5 h-5 text-green-500" />
-                    ) : (
-                      <div className="text-red-500 text-xs">Error</div>
-                    )
-                  ) : loading ? (
-                    <Loader2 className="w-5 h-5 animate-spin text-blue-500" />
-                  ) : (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => removeFile(file)}
-                    >
-                      <X className="w-4 h-4" />
-                    </Button>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Botão de Upload */}
-          {!hasSuccessfulUploads && (
-            <Button
-              onClick={handleUpload}
-              disabled={loading || files.length === 0}
-              className="w-full"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Uploading...
-                </>
-              ) : (
-                `Upload ${files.length} file${files.length > 1 ? "s" : ""}`
-              )}
-            </Button>
-          )}
-        </div>
-      )}
-
-      {/* Resultados do Upload */}
-      {results.length > 0 && (
-        <div className="mt-6 space-y-2">
-          <h3 className="text-lg font-semibold">Upload Results</h3>
-          {results.map((result, index) => (
-            <div
-              key={index}
-              className={cn(
-                "p-3 rounded-lg",
-                result.success
-                  ? "bg-green-50 border border-green-200"
-                  : "bg-red-50 border border-red-200"
-              )}
-            >
-              <div className="flex items-center gap-2">
-                {result.success ? (
-                  <CheckCircle className="w-4 h-4 text-green-500" />
-                ) : (
-                  <X className="w-4 h-4 text-red-500" />
-                )}
-                <p
-                  className={cn(
-                    "text-sm",
-                    result.success ? "text-green-700" : "text-red-700"
-                  )}
-                >
-                  {result.message}
-                </p>
-              </div>
-              {result.success && result.fileInfo && (
-                <div className="mt-2 text-xs text-gray-600">
-                  <p>Size: {formatBytes(result.fileInfo.size)}</p>
-                  <p>Type: {result.fileInfo.type}</p>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
     </div>
   );
 }
