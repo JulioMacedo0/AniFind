@@ -44,8 +44,8 @@ export async function uploadFile(formData: FormData) {
     searchFormData.append("image", file);
 
     // Call the search API
-    console.log("=== CALLING SEARCH API ===");
-    const response = await fetch("http://127.0.0.1:8000/api/v1/search", {
+    const apiUrl = "http://127.0.0.1:8000/api/v1/search";
+    const response = await fetch(apiUrl, {
       method: "POST",
       body: searchFormData,
     });
