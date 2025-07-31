@@ -187,19 +187,18 @@ export default function FileUpload({
               src={file.preview}
               alt={file.name}
               className={cn(
-                "w-full h-64 object-cover rounded-lg border-2",
+                "w-full h-64 object-cover rounded-lg border-2 transition-opacity duration-500",
                 loading ? "animate-pulse opacity-60" : "opacity-100"
               )}
             />
 
-            {/* Overlay de Loading */}
+            {/* Texto de Loading sobreposto */}
             {loading && (
-              <div className="absolute inset-0 bg-black bg-opacity-50 rounded-lg flex items-center justify-center">
-                <div className="text-center text-white">
-                  <Loader2 className="w-8 h-8 animate-spin mx-auto mb-2" />
-                  <p className="text-sm font-medium">Uploading...</p>
-                  <p className="text-xs mt-1">Processing your image</p>
-                </div>
+              <div className="absolute bottom-4 left-4 bg-white bg-opacity-90 px-3 py-2 rounded-lg shadow-lg">
+                <p className="text-sm font-semibold text-gray-800 flex items-center gap-2">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  SEARCHING ANIME
+                </p>
               </div>
             )}
 
