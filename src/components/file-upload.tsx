@@ -8,6 +8,8 @@ import { uploadFile } from "@/app/actions";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import Image from "next/image";
+import { formatBytes } from "@/helpers/formatBytes";
+
 interface FileWithPreview extends File {
   preview: string;
 }
@@ -51,15 +53,6 @@ interface UploadResult {
 interface FileUploadProps {
   maxFileSize?: number; // in bytes
 }
-
-const formatBytes = (bytes: number, decimals = 2) => {
-  if (bytes === 0) return "0 Bytes";
-  const k = 1024;
-  const dm = decimals < 0 ? 0 : decimals;
-  const sizes = ["Bytes", "KB", "MB", "GB"];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
-};
 
 export default function FileUpload({
   maxFileSize = 5 * 1024 * 1024, // 5MB default
