@@ -178,6 +178,9 @@ export function AnimeResults() {
                         </div>
                         <div className="aspect-video rounded-xl overflow-hidden bg-slate-900/50 shadow-2xl border border-slate-600/30">
                           <video
+                            autoPlay
+                            muted
+                            loop
                             src={
                               uploadResult.searchResults.top_result
                                 .preview_video
