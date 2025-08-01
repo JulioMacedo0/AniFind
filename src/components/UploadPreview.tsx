@@ -18,22 +18,22 @@ export default function UploadPreview({
   if (!file) return null;
 
   return (
-    <div className="absolute inset-0 flex items-center justify-center w-full h-full rounded-lg overflow-hidden">
+    <div className="absolute inset-0 flex items-center justify-center w-full h-full rounded-xl overflow-hidden">
       <Image
         width={400}
         height={300}
         src={file.preview}
         alt={file.name}
         className={cn(
-          "w-full h-full object-cover rounded-lg transition-opacity duration-500",
+          "w-full h-full object-cover rounded-xl transition-opacity duration-500",
           loading ? "animate-pulse opacity-60" : "opacity-100"
         )}
       />
 
       {loading && (
-        <div className="absolute bottom-4 left-4 bg-white bg-opacity-90 px-3 py-2 rounded-lg shadow-lg">
-          <p className="text-sm font-semibold text-gray-800 flex items-center gap-2">
-            <Loader2 className="w-4 h-4 animate-spin" />
+        <div className="absolute bottom-4 left-4 bg-slate-900/90 backdrop-blur-sm border border-slate-700/50 px-4 py-3 rounded-xl shadow-2xl">
+          <p className="text-sm font-semibold text-white flex items-center gap-2">
+            <Loader2 className="w-4 h-4 animate-spin text-blue-400" />
             SEARCHING ANIME
           </p>
         </div>
@@ -43,7 +43,7 @@ export default function UploadPreview({
         <Button
           variant="destructive"
           size="sm"
-          className="absolute top-2 right-2 cursor-pointer"
+          className="absolute top-3 right-3 cursor-pointer backdrop-blur-sm border border-red-500/30 shadow-xl"
           onClick={clearFile}
         >
           <X className="w-4 h-4" />
