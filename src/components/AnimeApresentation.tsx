@@ -72,9 +72,9 @@ export function AnimeApresentation({
   };
 
   return (
-    <section className="min-h-screen w-full   overflow-hidden flex items-center justify-center p-8">
-      <div className="relative p-0.5 rounded-xl bg-gradient-to-r from-blue-400 via-purple-400 to-indigo-400 shadow-[0_0_20px_rgba(96,165,250,0.3),0_0_40px_rgba(147,51,234,0.2),0_0_60px_rgba(99,102,241,0.1)] hover:shadow-[0_0_30px_rgba(96,165,250,0.4),0_0_60px_rgba(147,51,234,0.3),0_0_90px_rgba(99,102,241,0.2)] transition-all duration-300 w-full max-w-sm sm:max-w-2xl md:max-w-3xl lg:max-w-4xl mx-auto">
-        <div className="relative rounded-xl overflow-hidden bg-slate-900 aspect-[3/4] sm:aspect-[4/3] md:aspect-video min-h-[400px] sm:min-h-[350px] md:min-h-[400px]">
+    <section className="min-h-screen w-full overflow-visible flex items-center justify-center p-4 sm:p-8">
+      <div className="relative p-0.5 rounded-xl bg-gradient-to-r from-blue-400 via-purple-400 to-indigo-400 shadow-[0_0_20px_rgba(96,165,250,0.3),0_0_40px_rgba(147,51,234,0.2),0_0_60px_rgba(99,102,241,0.1)] hover:shadow-[0_0_30px_rgba(96,165,250,0.4),0_0_60px_rgba(147,51,234,0.3),0_0_90px_rgba(99,102,241,0.2)] transition-all duration-300 w-full max-w-[280px] sm:max-w-lg md:max-w-3xl lg:max-w-4xl mx-auto">
+        <div className="relative rounded-xl overflow-hidden bg-slate-900 w-full h-full min-h-[450px] sm:min-h-[600px] md:min-h-[400px]">
           {/* Background Video/Image */}
           <div className="absolute inset-0">
             <img
@@ -88,9 +88,9 @@ export function AnimeApresentation({
           </div>
 
           {/* Content Overlay */}
-          <div className="relative z-10 h-full flex flex-col justify-between p-3 sm:p-4 md:p-6 lg:p-8">
+          <div className="relative z-10 h-full flex flex-col justify-between p-3 sm:p-4 md:p-6 lg:p-8 min-h-0">
             {/* Top Section - Status and Controls */}
-            <div className="flex justify-between items-start">
+            <div className="flex justify-between items-start flex-shrink-0">
               <Badge
                 className={`${getStatusColor(
                   anime.status
@@ -128,25 +128,25 @@ export function AnimeApresentation({
             </div>
 
             {/* Main Content */}
-            <div className="flex flex-col gap-4 sm:gap-6 items-start sm:items-end">
+            <div className="flex flex-col gap-2 sm:gap-4 items-start sm:items-end flex-1 justify-end min-h-0 overflow-hidden">
               {/* Mobile: Stack vertically, Desktop: Side by side */}
-              <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 w-full sm:items-end">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-6 w-full sm:items-end max-w-full">
                 {/* Cover Image */}
                 <div className="flex-shrink-0 self-center sm:self-end">
                   <img
                     src={anime.coverImage || "/placeholder.svg"}
                     alt={`${anime.name} cover`}
-                    className="w-24 h-32 sm:w-32 sm:h-40 md:w-40 md:h-52 lg:w-48 lg:h-64 object-cover rounded-lg shadow-2xl border border-slate-600/50"
+                    className="w-18 h-28 sm:w-28 sm:h-36 md:w-36 md:h-48 lg:w-44 lg:h-60 object-cover rounded-lg shadow-2xl border border-slate-600/50"
                   />
                 </div>
 
                 {/* Anime Information */}
-                <div className="flex-1 space-y-3 sm:space-y-4">
+<div className="flex-1 space-y-2 sm:space-y-3 min-w-0 overflow-hidden">
                   <div>
-                    <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-2 drop-shadow-lg text-center sm:text-left">
+                    <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-2 sm:mb-2 drop-shadow-lg text-center sm:text-left truncate">
                       {anime.name}
                     </h1>
-                    <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 sm:gap-4 text-xs sm:text-sm text-gray-300 mb-3 sm:mb-4">
+                    <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 sm:gap-3 text-xs sm:text-sm text-gray-300 mb-2 sm:mb-2">
                       <div className="flex items-center gap-1">
                         <Star className="w-3 h-3 sm:w-4 sm:h-4 fill-yellow-400 text-yellow-400" />
                         <span className="font-medium">{anime.rating}</span>
@@ -166,8 +166,8 @@ export function AnimeApresentation({
                     </div>
                   </div>
 
-                  <div className="space-y-2 sm:space-y-3">
-                    <p className="text-gray-200 text-xs sm:text-sm md:text-base leading-relaxed max-w-2xl backdrop-blur-sm text-center sm:text-left line-clamp-3 sm:line-clamp-none">
+                  <div className="space-y-2 sm:space-y-2">
+                    <p className="text-gray-200 text-sm sm:text-sm leading-relaxed max-w-2xl backdrop-blur-sm text-center sm:text-left line-clamp-3 sm:line-clamp-3">
                       {anime.description}
                     </p>
 
@@ -184,13 +184,13 @@ export function AnimeApresentation({
                     </div>
                   </div>
 
-                  <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-2 w-full sm:w-auto">
-                    <Button className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg w-full sm:w-auto h-10 sm:h-9">
+                  <div className="flex flex-col sm:flex-row gap-3 sm:gap-3 w-full sm:w-auto pt-1">
+                    <Button className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg w-full sm:w-auto h-9 sm:h-9 text-sm sm:text-sm">
                       Watch Now
                     </Button>
                     <Button
                       variant="outline"
-                      className="bg-slate-800/60 border-slate-600/50 text-white hover:bg-slate-700/60 backdrop-blur-sm w-full sm:w-auto h-10 sm:h-9"
+                      className="bg-slate-800/60 border-slate-600/50 text-white hover:bg-slate-700/60 backdrop-blur-sm w-full sm:w-auto h-9 sm:h-9 text-sm sm:text-sm"
                     >
                       Add to List
                     </Button>
