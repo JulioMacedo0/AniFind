@@ -1,36 +1,53 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AniFind — Frontend 🎬
 
-## Getting Started
+![AniFind Preview](https://github.com/JulioMacedo0/AniFind/blob/main/public/anifind-desktop.jpg?raw=true) 
 
-First, run the development server:
+AniFind é uma plataforma que permite identificar **de qual anime é uma cena** com base em **um único frame (print)**.  
+Essa é a interface web do AniFind, construída com **Next.js**, que se comunica com a API Python do projeto.
+
+---
+
+## 🚀 O que você pode fazer com o AniFind?
+
+- Fazer upload de uma imagem ou print
+- Descobrir o nome do anime, temporada, episódio, minuto e segundo
+- Ver nota, descrição, gênero e estúdio do anime
+- Botão “Assistir agora” com links oficiais (Crunchyroll, YouTube, etc.)
+
+---
+
+## 📸 Exemplo de uso
+
+📤 Upload de imagem → 🎯 Retorno imediato da cena correspondente.
+
+⚠️ A base atual está treinada com episódios de **Solo Leveling (temporadas 1 e 2)** com **aspect ratio 16:9**.  
+Prints nesse formato produzem resultados mais precisos.
+
+---
+
+## 🧰 Tecnologias usadas
+
+- [Next.js 14](https://nextjs.org/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [ShadCN UI](https://ui.shadcn.com/)
+- [Zod](https://zod.dev/) para validação
+- [Sonner](https://sonner.emilkowal.ski/) para toasts
+- Integração com a [API do AniFind](https://github.com/JulioMacedo0/AniFind-API)
+- Consulta de metadados via [AniList GraphQL](https://anilist.co/)
+
+---
+
+## 🧪 Como rodar localmente
 
 ```bash
+# Clone o projeto
+git clone https://github.com/JulioMacedo0/AniFind.git
+
+# Acesse a pasta
+cd AniFind
+
+# Instale as dependências
+npm install
+
+# Rode o servidor de desenvolvimento
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
