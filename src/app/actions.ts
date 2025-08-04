@@ -2,6 +2,7 @@
 
 import { apolloServerClient } from "@/lib/apolloServer";
 import { GET_ANIME_BY_ID } from "@/lib/queries";
+import { redis } from "@/lib/redis";
 
 interface SearchResult {
   rank: number;
@@ -29,10 +30,21 @@ interface ErrorResponse {
 }
 
 export async function fetchAnimeData(animeId: number) {
+  const cacheKey = `anifind:${animeId}`;
+
+  const cached = await redis.get(cacheKey);
+  if (cached) {
+    console.log("✅ Cache HIT");
+    return JSON.parse(cached);
+  }
+
+  console.log("❌ Cache MISS — Fetching in Apollo");
   const { data } = await apolloServerClient.query({
     query: GET_ANIME_BY_ID,
     variables: { id: animeId },
   });
+
+  await redis.set(cacheKey, JSON.stringify(data));
 
   return data;
 }
