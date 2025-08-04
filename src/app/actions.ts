@@ -1,39 +1,12 @@
 "use server";
-
 import { createApolloServerClient } from "@/lib/apolloServer";
 import { GET_ANIME_BY_ID } from "@/lib/queries";
 import { redis } from "@/lib/redis";
-
-interface SearchResult {
-  rank: number;
-  anime: string;
-  season: number;
-  episode: number;
-  timecode: string;
-  second: number;
-  similarity: number;
-  anime_id: number;
-  source_file: string;
-  preview_source_path: string;
-  preview_video?: string | null;
-}
-
-interface SearchResponse {
-  top_result?: SearchResult | null;
-  all_results: SearchResult[];
-  preview_url?: string | null;
-}
+import type { SearchResponse, ExternalLink } from "@/@types/anime";
 
 interface ErrorResponse {
   error: string;
   detail?: string | null;
-}
-
-interface ExternalLink {
-  site: string;
-  url: string;
-  type: string;
-  language: string | null;
 }
 
 export async function fetchAnimeData(animeId: number) {
