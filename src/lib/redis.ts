@@ -2,7 +2,7 @@
 import { createClient } from "redis";
 
 export const redis = createClient({
-  url: process.env.REDIS_URL || "redis://172.17.0.1:6379",
+  url: process.env.REDIS_URL || "redis://default:dev123456@localhost:6379",
 });
 
 redis.on("error", (err) => {
