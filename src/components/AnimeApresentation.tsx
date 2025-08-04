@@ -19,27 +19,36 @@ interface AnimeData {
   name: string;
   description: string;
   coverImage: string;
-  previewVideo: string;
+  video: string;
   rating: number;
   year: number;
   episodes: number;
   genre: string[];
   studio: string;
   status: "Ongoing" | "Completed" | "Upcoming";
+  matchPercentage: number;
+  season: number;
+  episode: number;
+  timeCode: string;
 }
 
 const sampleAnime: AnimeData = {
   name: "Attack on Titan",
   description:
     "Humanity fights for survival against giant humanoid Titans that have brought civilization to the brink of extinction. When the Titans breach Wall Maria, Eren Yeager vows to eliminate every last Titan and reclaim the world for humanity.",
-  coverImage: "/placeholder.svg?height=600&width=400",
-  previewVideo: "/placeholder.svg?height=600&width=800",
+  coverImage: "https://m.media-amazon.com/images/I/71uHZO5ChkL._AC_SY879_.jpg",
+  video:
+    "https://cdn.juliomacedo.dev/previews/Solo_Leveling/Solo_Leveling_S01E01_903.mp4?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=admin%2F20250804%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250804T024308Z&X-Amz-Expires=86400&X-Amz-SignedHeaders=host&X-Amz-Signature=d43a144a02f491ca10760b4c7c3a6c872e2ed4d6a61a6a23649eb1b9c01ca459",
   rating: 9.0,
   year: 2013,
   episodes: 87,
   genre: ["Action", "Drama", "Fantasy"],
   studio: "Mappa",
   status: "Completed",
+  matchPercentage: 14.1,
+  season: 1,
+  episode: 5,
+  timeCode: "00:15:03",
 };
 
 export function AnimeApresentation({
@@ -47,7 +56,7 @@ export function AnimeApresentation({
 }: {
   anime?: AnimeData;
 }) {
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
 
   const togglePlay = () => {
@@ -72,14 +81,19 @@ export function AnimeApresentation({
   };
 
   return (
-    <section className="min-h-screen w-full overflow-visible flex items-center justify-center p-4 sm:p-8">
+    <section
+      id="results-section"
+      className="min-h-screen w-full overflow-visible flex items-center justify-center p-4 sm:p-8"
+    >
       <div className="relative p-0.5 rounded-xl bg-gradient-to-r from-blue-400 via-purple-400 to-indigo-400 shadow-[0_0_20px_rgba(96,165,250,0.3),0_0_40px_rgba(147,51,234,0.2),0_0_60px_rgba(99,102,241,0.1)] hover:shadow-[0_0_30px_rgba(96,165,250,0.4),0_0_60px_rgba(147,51,234,0.3),0_0_90px_rgba(99,102,241,0.2)] transition-all duration-300 w-full max-w-[280px] sm:max-w-lg md:max-w-3xl lg:max-w-4xl mx-auto">
         <div className="relative rounded-xl overflow-hidden bg-slate-900 w-full h-full min-h-[450px] sm:min-h-[600px] md:min-h-[400px]">
-          {/* Background Video/Image */}
+          {/* Background Video */}
           <div className="absolute inset-0">
-            <img
-              src={anime.previewVideo || "/placeholder.svg"}
-              alt={`${anime.name} preview`}
+            <video
+              src={anime.video}
+              autoPlay
+              muted={isMuted}
+              loop
               className="w-full h-full object-cover"
             />
             {/* Overlay gradients for better text readability */}
@@ -91,19 +105,24 @@ export function AnimeApresentation({
           <div className="relative z-10 h-full flex flex-col justify-between p-3 sm:p-4 md:p-6 lg:p-8 min-h-0">
             {/* Top Section - Status and Controls */}
             <div className="flex justify-between items-start flex-shrink-0">
-              <Badge
-                className={`${getStatusColor(
-                  anime.status
-                )} backdrop-blur-sm border text-xs`}
-              >
-                {anime.status}
-              </Badge>
+              <div className="flex flex-col gap-2">
+                <Badge
+                  className={`${getStatusColor(
+                    anime.status
+                  )} backdrop-blur-sm border text-xs`}
+                >
+                  {anime.status}
+                </Badge>
+                <Badge className="bg-green-500/20 text-green-400 border-green-500/30 backdrop-blur-sm border text-xs font-bold">
+                  {anime.matchPercentage}% match
+                </Badge>
+              </div>
 
               <div className="flex gap-2">
                 <Button
                   size="sm"
                   variant="secondary"
-                  className="bg-slate-800/80 hover:bg-slate-700/80 backdrop-blur-sm border-slate-600/50 h-8 w-8 sm:h-9 sm:w-9 p-0"
+                  className="bg-purple-800/80 hover:bg-purple-700/80 backdrop-blur-sm border-purple-600/50 h-8 w-8 sm:h-9 sm:w-9 p-0"
                   onClick={togglePlay}
                 >
                   {isPlaying ? (
@@ -115,7 +134,7 @@ export function AnimeApresentation({
                 <Button
                   size="sm"
                   variant="secondary"
-                  className="bg-slate-800/80 hover:bg-slate-700/80 backdrop-blur-sm border-slate-600/50 h-8 w-8 sm:h-9 sm:w-9 p-0"
+                  className="bg-purple-800/80 hover:bg-purple-700/80 backdrop-blur-sm border-purple-600/50 h-8 w-8 sm:h-9 sm:w-9 p-0"
                   onClick={toggleMute}
                 >
                   {isMuted ? (
@@ -141,7 +160,7 @@ export function AnimeApresentation({
                 </div>
 
                 {/* Anime Information */}
-<div className="flex-1 space-y-2 sm:space-y-3 min-w-0 overflow-hidden">
+                <div className="flex-1 space-y-2 sm:space-y-3 min-w-0 overflow-hidden">
                   <div>
                     <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-2 sm:mb-2 drop-shadow-lg text-center sm:text-left truncate">
                       {anime.name}
@@ -163,6 +182,15 @@ export function AnimeApresentation({
                         <Users className="w-3 h-3 sm:w-4 sm:h-4" />
                         <span>{anime.studio}</span>
                       </div>
+                    </div>
+
+                    {/* Episode Info */}
+                    <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 sm:gap-3 text-xs sm:text-sm text-blue-300 mb-2 sm:mb-2">
+                      <span className="font-medium">
+                        S{anime.season} E{anime.episode}
+                      </span>
+                      <span>•</span>
+                      <span className="font-mono">{anime.timeCode}</span>
                     </div>
                   </div>
 
