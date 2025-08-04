@@ -45,9 +45,8 @@ export const useAnimeStore = create<AnimeStore>((set, get) => ({
   // Computed
   hasResults: () => {
     const state = get();
-    return !!(
-      state.uploadResult?.success && state.uploadResult?.searchResults?.result
-    );
+
+    return !!state.uploadResult?.success;
   },
   getTopResult: () => {
     const state = get();
