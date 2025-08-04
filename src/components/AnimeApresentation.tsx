@@ -121,26 +121,24 @@ export function AnimeApresentation({
               <div className="flex gap-2">
                 <Button
                   size="sm"
-                  variant="secondary"
-                  className="bg-purple-800/80 hover:bg-purple-700/80 backdrop-blur-sm border-purple-600/50 h-8 w-8 sm:h-9 sm:w-9 p-0"
+                  className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 backdrop-blur-sm h-8 w-8 sm:h-9 sm:w-9 p-0"
                   onClick={togglePlay}
                 >
                   {isPlaying ? (
-                    <Pause className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <Pause className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
                   ) : (
-                    <Play className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <Play className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
                   )}
                 </Button>
                 <Button
                   size="sm"
-                  variant="secondary"
-                  className="bg-purple-800/80 hover:bg-purple-700/80 backdrop-blur-sm border-purple-600/50 h-8 w-8 sm:h-9 sm:w-9 p-0"
+                  className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 backdrop-blur-sm h-8 w-8 sm:h-9 sm:w-9 p-0"
                   onClick={toggleMute}
                 >
                   {isMuted ? (
-                    <VolumeX className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <VolumeX className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
                   ) : (
-                    <Volume2 className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <Volume2 className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
                   )}
                 </Button>
               </div>
@@ -220,7 +218,7 @@ export function AnimeApresentation({
                       variant="outline"
                       className="bg-slate-800/60 border-slate-600/50 text-white hover:bg-slate-700/60 backdrop-blur-sm w-full sm:w-auto h-9 sm:h-9 text-sm sm:text-sm"
                     >
-                      Add to List
+                      View full details
                     </Button>
                   </div>
                 </div>
