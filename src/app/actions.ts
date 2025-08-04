@@ -1,6 +1,6 @@
 "use server";
 
-import { apolloServerClient } from "@/lib/apolloServer";
+import { createApolloServerClient } from "@/lib/apolloServer";
 import { GET_ANIME_BY_ID } from "@/lib/queries";
 import { redis } from "@/lib/redis";
 
@@ -39,7 +39,7 @@ export async function fetchAnimeData(animeId: number) {
   }
 
   console.log("❌ Cache MISS — Fetching in Apollo");
-  const { data } = await apolloServerClient.query({
+  const { data } = await createApolloServerClient().query({
     query: GET_ANIME_BY_ID,
     variables: { id: animeId },
   });
