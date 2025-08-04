@@ -23,7 +23,7 @@ interface AnimeData {
   streamingUrl?: string | null;
 }
 
-const sampleAnime: AnimeData = {
+export const sampleAnime: AnimeData = {
   name: "Attack on Titan",
   description:
     "Humanity fights for survival against giant humanoid Titans that have brought civilization to the brink of extinction. When the Titans breach Wall Maria, Eren Yeager vows to eliminate every last Titan and reclaim the world for humanity.",
@@ -75,9 +75,24 @@ export function AnimeApresentation({
   return (
     <section
       id="results-section"
-      className="min-h-screen w-full overflow-visible flex items-center justify-center p-4 sm:p-8"
+      className="min-h-screen w-full bg-gradient-to-b from-slate-800 via-slate-900 to-black overflow-visible flex items-center justify-center p-4 sm:p-8 relative"
     >
-      <div className="relative p-0.5 rounded-xl bg-gradient-to-r from-blue-400 via-purple-400 to-indigo-400 shadow-[0_0_20px_rgba(96,165,250,0.3),0_0_40px_rgba(147,51,234,0.2),0_0_60px_rgba(99,102,241,0.1)] hover:shadow-[0_0_30px_rgba(96,165,250,0.4),0_0_60px_rgba(147,51,234,0.3),0_0_90px_rgba(99,102,241,0.2)] transition-all duration-300 w-full max-w-[280px] sm:max-w-lg md:max-w-3xl lg:max-w-4xl mx-auto">
+      {/* Background decorative elements - continuação do UploadSection */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div
+          className="absolute -top-20 -left-20 w-64 h-64 rounded-full bg-gradient-to-br from-purple-500/15 to-pink-500/10 blur-3xl animate-pulse"
+          style={{ animationDelay: "1s" }}
+        />
+        <div
+          className="absolute top-1/3 -right-32 w-80 h-80 rounded-full bg-gradient-to-br from-blue-500/10 to-indigo-500/15 blur-3xl animate-pulse"
+          style={{ animationDelay: "3s" }}
+        />
+        <div
+          className="absolute -bottom-32 left-1/4 w-72 h-72 rounded-full bg-gradient-to-br from-cyan-500/8 to-blue-500/12 blur-3xl animate-pulse"
+          style={{ animationDelay: "5s" }}
+        />
+      </div>
+      <div className="relative z-10 p-0.5 rounded-xl bg-gradient-to-r from-blue-400 via-purple-400 to-indigo-400 shadow-[0_0_20px_rgba(96,165,250,0.3),0_0_40px_rgba(147,51,234,0.2),0_0_60px_rgba(99,102,241,0.1)] hover:shadow-[0_0_30px_rgba(96,165,250,0.4),0_0_60px_rgba(147,51,234,0.3),0_0_90px_rgba(99,102,241,0.2)] transition-all duration-300 w-full max-w-[280px] sm:max-w-lg md:max-w-3xl lg:max-w-4xl mx-auto">
         <div className="relative rounded-xl overflow-hidden bg-slate-900 w-full h-full min-h-[450px] sm:min-h-[600px] md:min-h-[400px]">
           {/* Background Video */}
           <div className="absolute inset-0">

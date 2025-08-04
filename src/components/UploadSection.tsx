@@ -3,7 +3,7 @@ import { DragAndDropArea } from "./DragAndDropArea";
 
 export function UploadSection() {
   return (
-    <section className="min-h-screen w-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-700 relative overflow-hidden flex items-center justify-center p-8">
+    <section className="min-h-screen w-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-800 relative overflow-hidden flex items-center justify-center p-8">
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 rounded-full bg-gradient-to-br from-blue-500/20 to-indigo-500/20 blur-3xl animate-pulse" />
         <div
