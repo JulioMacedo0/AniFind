@@ -5,7 +5,9 @@ export const GET_ANIME_BY_ID = gql`
   query ($id: Int) {
     Media(id: $id, type: ANIME) {
       title {
+        english
         romaji
+        native
       }
       description
       coverImage {
