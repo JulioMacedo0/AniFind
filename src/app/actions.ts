@@ -86,6 +86,7 @@ export async function uploadFile(formData: FormData) {
             name:
               animeData.Media.title?.english ||
               animeData.Media.title?.romaji ||
+              animeData.Media.title?.native ||
               "Unknown Title",
             description:
               animeData.Media.description?.replace(/<[^>]*>/g, "") ||
