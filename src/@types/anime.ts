@@ -51,8 +51,7 @@ export interface UploadResult {
   searchResults?: SearchResponse | null;
   animeData?: AnimeData | null;
   error?: {
-    error: string;
-    detail?: string | null;
+    detail: string;
   };
 }
 
