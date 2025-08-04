@@ -29,6 +29,13 @@ interface ErrorResponse {
   detail?: string | null;
 }
 
+interface ExternalLink {
+  site: string;
+  url: string;
+  type: string;
+  language: string | null;
+}
+
 export async function fetchAnimeData(animeId: number) {
   const cacheKey = `anifind:${animeId}`;
 
@@ -47,6 +54,31 @@ export async function fetchAnimeData(animeId: number) {
   await redis.set(cacheKey, JSON.stringify(data));
 
   return data;
+}
+
+function findBestStreamingUrl(externalLinks: ExternalLink[]): string | null {
+  if (!externalLinks || externalLinks.length === 0) return null;
+
+  // Filter only streaming links
+  const streamingLinks = externalLinks.filter(
+    (link) => link.type === "STREAMING"
+  );
+
+  if (streamingLinks.length === 0) return null;
+
+  // Priority order: Crunchyroll -> Prime Video -> Netflix -> any other streaming
+  const priorities = ["Crunchyroll", "Amazon Prime Video", "Netflix"];
+
+  // Find by priority
+  for (const priority of priorities) {
+    const found = streamingLinks.find((link) =>
+      link.site.toLowerCase().includes(priority.toLowerCase())
+    );
+    if (found) return found.url;
+  }
+
+  // If no priority match, return the first streaming link
+  return streamingLinks[0]?.url || null;
 }
 export async function uploadFile(formData: FormData) {
   try {
@@ -115,6 +147,9 @@ export async function uploadFile(formData: FormData) {
             season: searchResults.top_result.season,
             episode: searchResults.top_result.episode,
             timeCode: searchResults.top_result.timecode,
+            streamingUrl: findBestStreamingUrl(
+              animeData.Media.externalLinks || []
+            ),
           }
         : null;
 
