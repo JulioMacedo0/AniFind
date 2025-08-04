@@ -32,9 +32,9 @@ export function createNotFoundPlaceholder(): AnimeData {
 export function createErrorPlaceholder(errorMessage?: string): AnimeData {
   return {
     name: "Search Error",
-    description:
-      errorMessage ||
-      "An error occurred while searching for the anime. Please try again.",
+    description: `An error occurred while searching for the anime. Please try again. ${
+      errorMessage || ""
+    }`,
     coverImage: "/500.png",
     video: "/500.mp4",
     rating: 10,
