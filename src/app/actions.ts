@@ -81,7 +81,7 @@ export async function uploadFile(formData: FormData) {
       if (response.status === 404) {
         console.log("🔍 No anime found - similarity below threshold");
         return {
-          success: true, // Considera sucesso para manter UX fluida
+          success: true,
           message: "No matching anime found with sufficient similarity",
           fileInfo: {
             name: file.name,
@@ -95,7 +95,7 @@ export async function uploadFile(formData: FormData) {
       }
 
       return {
-        success: false,
+        success: true,
         message: `Search failed: ${errorData.error}`,
         error: errorData,
         animeData: createErrorPlaceholder(errorData.error),
@@ -161,7 +161,7 @@ export async function uploadFile(formData: FormData) {
   } catch (error) {
     console.error("Upload/Search error:", error);
     return {
-      success: false,
+      success: true,
       message: error instanceof Error ? error.message : "Unknown error",
       animeData: createErrorPlaceholder(
         error instanceof Error ? error.message : "Unknown error occurred"
