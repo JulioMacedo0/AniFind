@@ -1,5 +1,8 @@
 "use server";
 
+import { apolloServerClient } from "@/lib/apolloServer";
+import { GET_ANIME_BY_ID } from "@/lib/queries";
+
 interface SearchResult {
   rank: number;
   anime: string;
@@ -25,6 +28,14 @@ interface ErrorResponse {
   detail?: string | null;
 }
 
+export async function fetchAnimeData(animeId: number) {
+  const { data } = await apolloServerClient.query({
+    query: GET_ANIME_BY_ID,
+    variables: { id: animeId },
+  });
+
+  return data;
+}
 export async function uploadFile(formData: FormData) {
   try {
     const file = formData.get("file") as File;
@@ -33,17 +44,9 @@ export async function uploadFile(formData: FormData) {
       throw new Error("No file was uploaded");
     }
 
-    console.log("=== FILE RECEIVED ===");
-    console.log("Name:", file.name);
-    console.log("Type:", file.type);
-    console.log("Size:", file.size, "bytes");
-    console.log("Last Modified:", new Date(file.lastModified));
-
-    // Prepare form data for the search API
     const searchFormData = new FormData();
     searchFormData.append("image", file);
 
-    // Call the search API
     const apiUrl = "http://172.17.0.1:8000/api/v1/search";
     const response = await fetch(apiUrl, {
       method: "POST",
@@ -61,10 +64,46 @@ export async function uploadFile(formData: FormData) {
     }
 
     const searchResults: SearchResponse = await response.json();
+    const animeData = await fetchAnimeData(
+      searchResults.top_result?.anime_id || 0
+    );
 
-    console.log("=== SEARCH RESULTS ===");
-    console.log("Top Result:", searchResults.top_result);
-    console.log("Total Results:", searchResults.all_results.length);
+    const transformedAnimeData =
+      animeData?.Media && searchResults.top_result
+        ? {
+            name:
+              animeData.Media.title?.english ||
+              animeData.Media.title?.romaji ||
+              "Unknown Title",
+            description:
+              animeData.Media.description?.replace(/<[^>]*>/g, "") ||
+              "No description available",
+            coverImage:
+              animeData.Media.coverImage?.extraLarge ||
+              animeData.Media.coverImage?.large ||
+              "",
+            video: searchResults.top_result.preview_video || "",
+            rating: (animeData.Media.averageScore || 0) / 10,
+            year: animeData.Media.startDate?.year || new Date().getFullYear(),
+            episodes: animeData.Media.episodes || 0,
+            genre: animeData.Media.genres || [],
+            studio:
+              animeData.Media.studios?.nodes?.[0]?.name || "Unknown Studio",
+            status:
+              animeData.Media.status === "FINISHED"
+                ? ("Completed" as const)
+                : animeData.Media.status === "RELEASING"
+                ? ("Ongoing" as const)
+                : animeData.Media.status === "NOT_YET_RELEASED"
+                ? ("Upcoming" as const)
+                : ("Completed" as const),
+            matchPercentage:
+              Math.round(searchResults.top_result.similarity * 100) / 100,
+            season: searchResults.top_result.season,
+            episode: searchResults.top_result.episode,
+            timeCode: searchResults.top_result.timecode,
+          }
+        : null;
 
     return {
       success: true,
@@ -76,6 +115,7 @@ export async function uploadFile(formData: FormData) {
         lastModified: file.lastModified,
       },
       searchResults,
+      animeData: transformedAnimeData,
     };
   } catch (error) {
     console.error("Upload/Search error:", error);
