@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "AniFind - Discover Anime from Screenshots",
   description:
-    "Upload any anime screenshot and instantly discover the anime name, episode, and exact scene. Powered by AI and a vast anime database.",
+    "Upload any anime screenshot and instantly discover the anime name, episode, and exact scene. Powered by perceptual hashing and FAISS search technology.",
 };
 
 export default function RootLayout({
