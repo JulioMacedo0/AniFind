@@ -119,7 +119,7 @@ export function AnimeApresentation({
               </div>
 
               <div className="flex gap-2">
-                <Button
+                {/* <Button
                   size="sm"
                   className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 backdrop-blur-sm h-8 w-8 sm:h-9 sm:w-9 p-0"
                   onClick={togglePlay}
@@ -129,7 +129,7 @@ export function AnimeApresentation({
                   ) : (
                     <Play className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
                   )}
-                </Button>
+                </Button> */}
                 <Button
                   size="sm"
                   className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 backdrop-blur-sm h-8 w-8 sm:h-9 sm:w-9 p-0"
