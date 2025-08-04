@@ -9,7 +9,7 @@ import { useAnimeStore } from "@/store/anime-store";
 export function AnimeApresentation() {
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
-  const { hasResults, getAnimeData } = useAnimeStore();
+  const { hasResults, getAnimeData, clearAll } = useAnimeStore();
 
   const togglePlay = () => {
     setIsPlaying(!isPlaying);
@@ -196,8 +196,15 @@ export function AnimeApresentation() {
                       } text-white shadow-lg w-full sm:w-auto h-9 sm:h-9 text-sm sm:text-sm`}
                       onClick={() => {
                         if (isNotFound || isError) {
-                          // Volta para o upload
-                          window.location.reload();
+                          clearAll();
+
+                          const uploadSection =
+                            document.getElementById("upload-section");
+                          if (uploadSection) {
+                            uploadSection.scrollIntoView({
+                              behavior: "smooth",
+                            });
+                          }
                         } else if (anime.streamingUrl) {
                           window.open(anime.streamingUrl, "_blank");
                         }
