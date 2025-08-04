@@ -27,11 +27,29 @@ interface FileInfo {
   lastModified: number;
 }
 
+interface AnimeData {
+  name: string;
+  description: string;
+  coverImage: string;
+  video: string;
+  rating: number;
+  year: number;
+  episodes: number;
+  genre: string[];
+  studio: string;
+  status: "Ongoing" | "Completed" | "Upcoming";
+  matchPercentage: number;
+  season: number;
+  episode: number;
+  timeCode: string;
+}
+
 interface UploadResult {
   success: boolean;
   message: string;
   fileInfo?: FileInfo;
   searchResults?: SearchResponse;
+  animeData?: AnimeData | null;
   error?: {
     error: string;
     detail?: string | null;
@@ -60,6 +78,7 @@ interface AnimeStore {
   hasResults: () => boolean;
   getTopResult: () => SearchResult | null;
   getAllResults: () => SearchResult[];
+  getAnimeData: () => AnimeData | null;
 }
 
 export const useAnimeStore = create<AnimeStore>((set, get) => ({
@@ -92,5 +111,9 @@ export const useAnimeStore = create<AnimeStore>((set, get) => ({
   getAllResults: () => {
     const state = get();
     return state.uploadResult?.searchResults?.all_results || [];
+  },
+  getAnimeData: () => {
+    const state = get();
+    return state.uploadResult?.animeData || null;
   },
 }));
