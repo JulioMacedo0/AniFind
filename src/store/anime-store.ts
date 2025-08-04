@@ -42,6 +42,7 @@ interface AnimeData {
   season: number;
   episode: number;
   timeCode: string;
+  streamingUrl?: string | null;
 }
 
 interface UploadResult {

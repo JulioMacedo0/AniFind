@@ -29,6 +29,12 @@ export const GET_ANIME_BY_ID = gql`
         }
       }
       status
+      externalLinks {
+        site
+        url
+        type
+        language
+      }
     }
   }
 `;

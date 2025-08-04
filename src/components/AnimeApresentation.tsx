@@ -1,17 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Play,
-  Pause,
-  Volume2,
-  VolumeX,
-  Star,
-  Calendar,
-  Clock,
-  Users,
-  Section,
-} from "lucide-react";
+import { Volume2, VolumeX, Star, Calendar, Clock, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
@@ -30,6 +20,7 @@ interface AnimeData {
   season: number;
   episode: number;
   timeCode: string;
+  streamingUrl?: string | null;
 }
 
 const sampleAnime: AnimeData = {
@@ -49,6 +40,7 @@ const sampleAnime: AnimeData = {
   season: 1,
   episode: 5,
   timeCode: "00:15:03",
+  streamingUrl: "https://www.crunchyroll.com/attack-on-titan",
 };
 
 export function AnimeApresentation({
@@ -211,15 +203,23 @@ export function AnimeApresentation({
                   </div>
 
                   <div className="flex flex-col sm:flex-row gap-3 sm:gap-3 w-full sm:w-auto pt-1">
-                    <Button className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg w-full sm:w-auto h-9 sm:h-9 text-sm sm:text-sm">
-                      Watch Now
-                    </Button>
                     <Button
+                      className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg w-full sm:w-auto h-9 sm:h-9 text-sm sm:text-sm"
+                      onClick={() => {
+                        if (anime.streamingUrl) {
+                          window.open(anime.streamingUrl, "_blank");
+                        }
+                      }}
+                      disabled={!anime.streamingUrl}
+                    >
+                      {anime.streamingUrl ? "Watch Now" : "Not Available"}
+                    </Button>
+                    {/* <Button
                       variant="outline"
                       className="bg-slate-800/60 border-slate-600/50 text-white hover:bg-slate-700/60 backdrop-blur-sm w-full sm:w-auto h-9 sm:h-9 text-sm sm:text-sm"
                     >
                       View full details
-                    </Button>
+                    </Button> */}
                   </div>
                 </div>
               </div>
