@@ -4,11 +4,12 @@ import { useState } from "react";
 import { Volume2, VolumeX, Star, Calendar, Clock, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import type { AnimeData } from "@/@types";
+import { useAnimeStore } from "@/store/anime-store";
 
-export function AnimeApresentation({ anime }: { anime: AnimeData }) {
+export function AnimeApresentation() {
   const [isPlaying, setIsPlaying] = useState(true);
   const [isMuted, setIsMuted] = useState(true);
+  const { hasResults, getAnimeData } = useAnimeStore();
 
   const togglePlay = () => {
     setIsPlaying(!isPlaying);
@@ -17,6 +18,11 @@ export function AnimeApresentation({ anime }: { anime: AnimeData }) {
   const toggleMute = () => {
     setIsMuted(!isMuted);
   };
+
+  const anime = getAnimeData();
+  if (!hasResults() || !anime) {
+    return null;
+  }
 
   const getStatusColor = (status: string) => {
     switch (status) {
