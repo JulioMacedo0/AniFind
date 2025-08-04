@@ -81,12 +81,10 @@ export async function uploadFile(formData: FormData) {
     }
 
     const searchResults: SearchResponse = await response.json();
-    const animeData = await fetchAnimeData(
-      searchResults.top_result?.anime_id || 0
-    );
+    const animeData = await fetchAnimeData(searchResults.result?.anime_id || 0);
 
     const transformedAnimeData =
-      animeData?.Media && searchResults.top_result
+      animeData?.Media && searchResults.result
         ? {
             name:
               animeData.Media.title?.english ||
@@ -100,7 +98,7 @@ export async function uploadFile(formData: FormData) {
               animeData.Media.coverImage?.extraLarge ||
               animeData.Media.coverImage?.large ||
               "",
-            video: searchResults.top_result.preview_video || "",
+            video: searchResults.result.preview_video || "",
             rating: (animeData.Media.averageScore || 0) / 10,
             year: animeData.Media.startDate?.year || new Date().getFullYear(),
             episodes: animeData.Media.episodes || 0,
@@ -116,10 +114,10 @@ export async function uploadFile(formData: FormData) {
                 ? ("Upcoming" as const)
                 : ("Completed" as const),
             matchPercentage:
-              Math.round(searchResults.top_result.similarity * 100) / 100,
-            season: searchResults.top_result.season,
-            episode: searchResults.top_result.episode,
-            timeCode: searchResults.top_result.timecode,
+              Math.round(searchResults.result.similarity * 100) / 100,
+            season: searchResults.result.season,
+            episode: searchResults.result.episode,
+            timeCode: searchResults.result.timecode,
             streamingUrl: findBestStreamingUrl(
               animeData.Media.externalLinks || []
             ),

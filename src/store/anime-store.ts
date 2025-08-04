@@ -23,7 +23,7 @@ interface AnimeStore {
   // Computed
   hasResults: () => boolean;
   getTopResult: () => SearchResult | null;
-  getAllResults: () => SearchResult[];
+  getAllResults: () => SearchResult | null;
   getAnimeData: () => AnimeData | null;
 }
 
@@ -46,17 +46,16 @@ export const useAnimeStore = create<AnimeStore>((set, get) => ({
   hasResults: () => {
     const state = get();
     return !!(
-      state.uploadResult?.success &&
-      state.uploadResult?.searchResults?.top_result
+      state.uploadResult?.success && state.uploadResult?.searchResults?.result
     );
   },
   getTopResult: () => {
     const state = get();
-    return state.uploadResult?.searchResults?.top_result || null;
+    return state.uploadResult?.searchResults?.result || null;
   },
   getAllResults: () => {
     const state = get();
-    return state.uploadResult?.searchResults?.all_results || [];
+    return state.uploadResult?.searchResults?.result || null;
   },
   getAnimeData: () => {
     const state = get();

@@ -31,8 +31,7 @@ export interface SearchResult {
 }
 
 export interface SearchResponse {
-  top_result?: SearchResult | null;
-  all_results: SearchResult[];
+  result?: SearchResult | null;
   preview_url?: string | null;
 }
 

@@ -34,7 +34,7 @@ export function DragAndDropArea() {
         setUploadResult(result);
 
         // Scroll to results if successful
-        if (result.success && result.searchResults?.top_result) {
+        if (result.success && result.searchResults?.result) {
           setTimeout(() => {
             const resultsSection = document.getElementById("results-section");
             if (resultsSection) {
