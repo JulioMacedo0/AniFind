@@ -14,6 +14,8 @@ export interface AnimeData {
   episode: number;
   timeCode: string;
   streamingUrl?: string | null;
+  isNotFound?: boolean;
+  isError?: boolean;
 }
 
 export interface SearchResult {
@@ -46,7 +48,7 @@ export interface UploadResult {
   success: boolean;
   message: string;
   fileInfo?: FileInfo;
-  searchResults?: SearchResponse;
+  searchResults?: SearchResponse | null;
   animeData?: AnimeData | null;
   error?: {
     error: string;

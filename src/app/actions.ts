@@ -2,7 +2,11 @@
 import { createApolloServerClient } from "@/lib/apolloServer";
 import { GET_ANIME_BY_ID } from "@/lib/queries";
 import { redis } from "@/lib/redis";
-import type { SearchResponse, ExternalLink } from "@/@types/anime";
+import {
+  createNotFoundPlaceholder,
+  createErrorPlaceholder,
+} from "@/lib/placeholders";
+import type { SearchResponse, ExternalLink } from "@/@types";
 
 interface ErrorResponse {
   error: string;
@@ -73,10 +77,28 @@ export async function uploadFile(formData: FormData) {
     if (!response.ok) {
       const errorData: ErrorResponse = await response.json();
       console.error("Search API Error:", errorData);
+
+      if (response.status === 404) {
+        console.log("🔍 No anime found - similarity below threshold");
+        return {
+          success: true, // Considera sucesso para manter UX fluida
+          message: "No matching anime found with sufficient similarity",
+          fileInfo: {
+            name: file.name,
+            type: file.type,
+            size: file.size,
+            lastModified: file.lastModified,
+          },
+          searchResults: null,
+          animeData: createNotFoundPlaceholder(),
+        };
+      }
+
       return {
         success: false,
         message: `Search failed: ${errorData.error}`,
         error: errorData,
+        animeData: createErrorPlaceholder(errorData.error),
       };
     }
 
@@ -141,6 +163,9 @@ export async function uploadFile(formData: FormData) {
     return {
       success: false,
       message: error instanceof Error ? error.message : "Unknown error",
+      animeData: createErrorPlaceholder(
+        error instanceof Error ? error.message : "Unknown error occurred"
+      ),
     };
   }
 }

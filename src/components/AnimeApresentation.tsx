@@ -24,6 +24,11 @@ export function AnimeApresentation() {
     return null;
   }
 
+  // Detecta se é um placeholder de erro ou não encontrado
+  const isNotFound = anime.isNotFound;
+  const isError = anime.isError;
+  const isPlaceholder = isNotFound || isError;
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case "Ongoing":
@@ -184,15 +189,28 @@ export function AnimeApresentation() {
 
                   <div className="flex flex-col sm:flex-row gap-3 sm:gap-3 w-full sm:w-auto pt-1">
                     <Button
-                      className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg w-full sm:w-auto h-9 sm:h-9 text-sm sm:text-sm"
+                      className={`${
+                        isNotFound || isError
+                          ? "bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-500 hover:to-slate-600"
+                          : "bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
+                      } text-white shadow-lg w-full sm:w-auto h-9 sm:h-9 text-sm sm:text-sm`}
                       onClick={() => {
-                        if (anime.streamingUrl) {
+                        if (isNotFound || isError) {
+                          // Volta para o upload
+                          window.location.reload();
+                        } else if (anime.streamingUrl) {
                           window.open(anime.streamingUrl, "_blank");
                         }
                       }}
-                      disabled={!anime.streamingUrl}
+                      disabled={!isNotFound && !isError && !anime.streamingUrl}
                     >
-                      {anime.streamingUrl ? "Watch Now" : "Not Available"}
+                      {isNotFound
+                        ? "Try Another Image"
+                        : isError
+                        ? "Try Again"
+                        : anime.streamingUrl
+                        ? "Watch Now"
+                        : "Not Available"}
                     </Button>
                     {/* <Button
                       variant="outline"

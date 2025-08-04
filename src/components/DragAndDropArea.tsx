@@ -8,10 +8,7 @@ import { cn } from "@/lib/utils";
 import { Upload } from "lucide-react";
 import { useDropzone } from "react-dropzone";
 import UploadPreview from "./UploadPreview";
-
-interface FileWithPreview extends File {
-  preview: string;
-}
+import type { FileWithPreview } from "@/@types";
 
 export function DragAndDropArea() {
   const { file, isLoading, setFile, setLoading, setUploadResult, setError } =
