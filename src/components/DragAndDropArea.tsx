@@ -30,8 +30,7 @@ export function DragAndDropArea() {
         const result = await handleFileUpload(fileWithPreview);
         setUploadResult(result);
 
-        // Scroll to results if successful
-        if (result.success && result.searchResults?.result) {
+        if (result.success) {
           setTimeout(() => {
             const resultsSection = document.getElementById("results-section");
             if (resultsSection) {
@@ -40,6 +39,7 @@ export function DragAndDropArea() {
           }, 500);
         }
       } catch (error) {
+        console.error("Upload failed:", error);
         setError(error instanceof Error ? error.message : "Upload failed");
       } finally {
         setLoading(false);
@@ -55,6 +55,7 @@ export function DragAndDropArea() {
     accept: {
       "image/*": [".png", ".jpg", ".jpeg", ".webp"],
     },
+    disabled: !!file,
   });
 
   return (
