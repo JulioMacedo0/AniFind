@@ -9,8 +9,7 @@ import {
 import type { SearchResponse, ExternalLink } from "@/@types";
 
 interface ErrorResponse {
-  error: string;
-  detail?: string | null;
+  detail: string;
 }
 
 export async function fetchAnimeData(animeId: number) {
@@ -96,9 +95,9 @@ export async function uploadFile(formData: FormData) {
 
       return {
         success: true,
-        message: `Search failed: ${errorData.error}`,
+        message: `Search failed: ${errorData.detail}`,
         error: errorData,
-        animeData: createErrorPlaceholder(errorData.error),
+        animeData: createErrorPlaceholder(errorData.detail),
       };
     }
 
