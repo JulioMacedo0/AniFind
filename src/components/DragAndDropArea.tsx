@@ -2,6 +2,7 @@
 import { ACCEPTED_MIME_TYPES, MAX_FILE_SIZE } from "@/constants/defaultValues";
 import { fileRejectionHandler } from "@/helpers/fileRejection";
 import { formatBytes } from "@/helpers/formatBytes";
+import { getSupportedFileTypes } from "@/helpers/getSupportedFileTypes";
 import { handleFileUpload } from "@/helpers/handleFileUpload";
 import { useAnimeStore } from "@/store/anime-store";
 import { cn } from "@/lib/utils";
@@ -87,7 +88,7 @@ export function DragAndDropArea() {
                   Drag an image here or click to select
                 </p>
                 <p className="text-sm text-gray-400">
-                  Support for PNG, JPG, JPEG, and WebP images
+                  Support for {getSupportedFileTypes()} images
                 </p>
                 <p className="text-xs text-gray-500 mt-1">
                   Max size: {formatBytes(MAX_FILE_SIZE)}
