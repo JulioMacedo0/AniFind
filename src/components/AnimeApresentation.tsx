@@ -1,7 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { Volume2, VolumeX, Star, Calendar, Clock, Users } from "lucide-react";
+import {
+  Volume2,
+  VolumeX,
+  Star,
+  Calendar,
+  Clock,
+  Users,
+  Search,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAnimeStore } from "@/store/anime-store";
@@ -190,41 +198,37 @@ export function AnimeApresentation() {
                   <div className="flex flex-col sm:flex-row gap-3 sm:gap-3 w-full sm:w-auto pt-1">
                     <Button
                       className={`${
-                        isNotFound || isError
-                          ? "bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-500 hover:to-slate-600"
-                          : "bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
+                        anime.streamingUrl && !isNotFound && !isError
+                          ? "bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
+                          : "bg-gradient-to-r from-slate-600 to-slate-700 hover:from-slate-500 hover:to-slate-600"
                       } text-white shadow-lg w-full sm:w-auto h-9 sm:h-9 text-sm sm:text-sm`}
                       onClick={() => {
-                        if (isNotFound || isError) {
-                          clearAll();
-
-                          const uploadSection =
-                            document.getElementById("upload-section");
-                          if (uploadSection) {
-                            uploadSection.scrollIntoView({
-                              behavior: "smooth",
-                            });
-                          }
-                        } else if (anime.streamingUrl) {
+                        if (anime.streamingUrl && !isNotFound && !isError) {
                           window.open(anime.streamingUrl, "_blank");
                         }
                       }}
-                      disabled={!isNotFound && !isError && !anime.streamingUrl}
+                      disabled={!anime.streamingUrl || isNotFound || isError}
                     >
-                      {isNotFound
-                        ? "Try Another Image"
-                        : isError
-                        ? "Try Again"
-                        : anime.streamingUrl
+                      {anime.streamingUrl && !isNotFound && !isError
                         ? "Watch Now"
                         : "Not Available"}
                     </Button>
-                    {/* <Button
+                    <Button
+                      onClick={() => {
+                        const uploadSection =
+                          document.getElementById("upload-section");
+                        if (uploadSection) {
+                          uploadSection.scrollIntoView({
+                            behavior: "smooth",
+                          });
+                        }
+                      }}
                       variant="outline"
-                      className="bg-slate-800/60 border-slate-600/50 text-white hover:bg-slate-700/60 backdrop-blur-sm w-full sm:w-auto h-9 sm:h-9 text-sm sm:text-sm"
+                      className="bg-gradient-to-r from-cyan-600/80 to-blue-600/80 border-cyan-500/50 text-white hover:from-cyan-500/90 hover:to-blue-500/90 hover:border-cyan-400/60 backdrop-blur-sm w-full sm:w-auto h-9 sm:h-9 text-sm sm:text-sm transition-all duration-300 flex items-center gap-2 hover:cursor-pointer"
                     >
-                      View full details
-                    </Button> */}
+                      <Search className="w-4 h-4" />
+                      Find More Anime
+                    </Button>
                   </div>
                 </div>
               </div>
