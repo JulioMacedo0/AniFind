@@ -1,5 +1,5 @@
 "use client";
-import { MAX_FILE_SIZE } from "@/constants/defaultValues";
+import { ACCEPTED_MIME_TYPES, MAX_FILE_SIZE } from "@/constants/defaultValues";
 import { fileRejectionHandler } from "@/helpers/fileRejection";
 import { formatBytes } from "@/helpers/formatBytes";
 import { handleFileUpload } from "@/helpers/handleFileUpload";
@@ -9,6 +9,8 @@ import { Upload } from "lucide-react";
 import { useDropzone } from "react-dropzone";
 import UploadPreview from "./UploadPreview";
 import type { FileWithPreview } from "@/@types";
+
+import { useClipboardFiles } from "@/hooks/useClipboardFiles";
 
 export function DragAndDropArea() {
   const { file, isLoading, setFile, setLoading, setUploadResult, setError } =
@@ -47,14 +49,14 @@ export function DragAndDropArea() {
     }
   };
 
+  useClipboardFiles((file) => handleFileAccepted([file]));
+
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     multiple: false,
     maxSize: MAX_FILE_SIZE,
     onDropRejected: fileRejectionHandler,
     onDropAccepted: handleFileAccepted,
-    accept: {
-      "image/*": [".png", ".jpg", ".jpeg", ".webp"],
-    },
+    accept: ACCEPTED_MIME_TYPES,
     disabled: !!file,
   });
 
