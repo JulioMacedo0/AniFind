@@ -1,4 +1,3 @@
-"use client";
 import { DragAndDropArea } from "./DragAndDropArea";
 
 export function UploadSection() {

@@ -1,4 +1,3 @@
-"use client";
 import { Github, Heart } from "lucide-react";
 
 export function Footer() {
