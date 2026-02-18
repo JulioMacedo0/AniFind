@@ -2,7 +2,7 @@
 
 ![AniFind Preview](https://github.com/JulioMacedo0/AniFind/blob/main/public/anifind-desktop.jpg?raw=true) 
 
-AniFind é uma plataforma que permite identificar **de qual anime é uma cena** com base em **um único frame (print)**.  
+[AniFind](https://anifind.juliomacedo.dev) é uma plataforma que permite identificar **de qual anime é uma cena** com base em **um único frame (print)**.  
 Essa é a interface web do AniFind, construída com **Next.js**, que se comunica com a API Python do projeto.
 
 ---
